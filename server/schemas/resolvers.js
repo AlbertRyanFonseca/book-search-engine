@@ -49,6 +49,7 @@ const resolvers = {
                     { $addToSet: { savedBooks: body } },
                     { new: true, runValidators: true }
                 )
+                return saveBook;
             }
         })
     }
