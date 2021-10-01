@@ -51,6 +51,7 @@ const resolvers = {
                 )
                 return saveBook;
             }
+            throw new AuthenticationError('Not signed in! Please sign in!');
         },
         deleteBook: async (parent, { user }, context) => {
             const deleteBook = await User.findOneAndUpdate(
@@ -58,6 +59,9 @@ const resolvers = {
                 { $pull: { savedBooks: { bookId: context.bookId } } },
                 { new: true }
             );
+            if (!deleteBook) {
+                throw new AuthenticationError('User not found!');
+            }
             return deleteBook;
         }
     }
