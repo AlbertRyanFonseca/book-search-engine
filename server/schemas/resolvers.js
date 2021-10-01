@@ -42,7 +42,7 @@ const resolvers = {
             const token = signToken(user);
             return { token, user };
         },
-        addBook: async(parent, { user, body }, context => {
+        addBook: async (parent, { user, body }, context) => {
             if (context.user) {
                 const saveBook = await User.findOneAndUpdate(
                     { _id: user },
@@ -51,7 +51,7 @@ const resolvers = {
                 )
                 return saveBook;
             }
-        })
+        }
     }
 
 }
