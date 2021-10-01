@@ -57,7 +57,8 @@ const resolvers = {
                 { _id: user.id },
                 { $pull: { savedBooks: { bookId: context.bookId } } },
                 { new: true }
-            )
+            );
+            return deleteBook;
         }
     }
 
