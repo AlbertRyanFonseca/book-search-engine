@@ -18,7 +18,6 @@ const resolvers = {
 
                 return userData;
             }
-            // throw new AuthenticationError('Not logged in');
         },
     },
 }
