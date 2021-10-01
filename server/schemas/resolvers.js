@@ -18,14 +18,16 @@ const resolvers = {
 
                 return userData;
             }
+            throw new AuthenticationError('Not signed in! Please sign in!');
         },
     },
 
     Mutation: {
         createUser: async (parent, args) => {
             const user = await User.create(args);
+            const token = signToken(user);
 
-            return { user };
+            return { user, token };
         },
         login: async (parent, { email, password }) => {
             const user = await User.findOne({ email });
@@ -42,27 +44,26 @@ const resolvers = {
             const token = signToken(user);
             return { token, user };
         },
-        addBook: async (parent, { user, body }, context) => {
+        addBook: async (parent, { input }, context) => {
             if (context.user) {
                 const saveBook = await User.findOneAndUpdate(
-                    { _id: user },
-                    { $addToSet: { savedBooks: body } },
-                    { new: true, runValidators: true }
+                    { _id: context.user._id },
+                    { $push: { savedBooks: input } },
+                    { new: true }
                 )
                 return saveBook;
             }
-            throw new AuthenticationError('Not signed in! Please sign in!');
         },
-        deleteBook: async (parent, { user }, context) => {
-            const deleteBook = await User.findOneAndUpdate(
-                { _id: user.id },
-                { $pull: { savedBooks: { bookId: context.bookId } } },
-                { new: true }
-            );
-            if (!deleteBook) {
-                throw new AuthenticationError('User not found!');
+        deleteBook: async (parent, { bookId }, context) => {
+            if (context.user) {
+                const deleteBook = await User.findOneAndUpdate(
+                    { _id: context.user._id },
+                    { $pull: { savedBooks: { bookId: bookId } } },
+                    { new: true }
+                );
+                return deleteBook;
             }
-            return deleteBook;
+            throw new AuthenticationError('User not found!');
         }
     }
 
